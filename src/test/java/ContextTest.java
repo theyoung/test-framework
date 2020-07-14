@@ -43,4 +43,21 @@ class ContextTest {
 
         System.out.println(context.getHashCode(tt));
     }
+
+
+    //Not Properly Working Code
+    @Test
+    void injectionThread() throws Exception{
+        Context context = new Context();
+
+        context.setPointCut("onCreate");
+
+        readXml();
+
+        TestCaseInterface ic = context.creatBean("TestCaseThread");
+        ic.setName("Normal Person");
+        ic.setYear("1");
+
+        System.out.println(context.getHashCode(ic));
+    }
 }

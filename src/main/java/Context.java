@@ -3,11 +3,14 @@ import org.springframework.cglib.proxy.MethodInterceptor;
 import org.springframework.cglib.proxy.MethodProxy;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 public class Context {
-
+    BlockingQueue<Message> blockingQueue = new ArrayBlockingQueue<>(10);
     HashMap<TestCaseInterface, Integer> singletone = new HashMap<>();
     String pointCut = "";
 
@@ -30,7 +33,7 @@ public class Context {
 
     TestCaseInterface creatBean(String clazzName) throws Exception {
         Class<?> clazz = Class.forName(clazzName);
-
+        Type type = clazz.getGenericSuperclass();
         if (clazz != null) {
 //            TestCaseInterface testCaseInterface = (TestCaseInterface)clazz.getDeclaredConstructor().newInstance();
 //            testCaseInterface.onCreate();
@@ -64,7 +67,14 @@ public class Context {
 
                 }
             });
-            TestCaseInterface test = (TestCaseInterface) enhancer.create();
+            TestCaseInterface test;
+
+            if(type.getTypeName() == "TestCaseAbstract"){
+
+                test = (TestCaseInterface) enhancer.create(new Class[]{blockingQueue.getClass()}, new Object[]{blockingQueue});
+            } else {
+                test = (TestCaseInterface) enhancer.create();
+            }
             test.onCreate();
             return test;
         }

@@ -2,6 +2,7 @@ public class TestCase3 implements TestCaseInterface { //Bean, DTO, VO, EO
     String name;
     String year;
 
+
     public String getName() {
         return name;
     }
